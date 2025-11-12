@@ -3,9 +3,6 @@ const { body } = require('express-validator');
 const {
   register,
   login,
-  verifyEmail,
-  forgotPassword,
-  resetPassword,
   getMe,
 } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
@@ -28,9 +25,6 @@ const loginValidation = [
 // Routes
 router.post('/register', registerValidation, register);
 router.post('/login', loginValidation, login);
-router.post('/verify-email', verifyEmail);
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password', resetPassword);
 router.get('/me', protect, getMe);
 
 module.exports = router;
