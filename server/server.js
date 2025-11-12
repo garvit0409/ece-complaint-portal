@@ -38,7 +38,11 @@ app.use(limiter);
 // CORS configuration
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: [
+      process.env.CLIENT_URL || 'http://localhost:5173',
+      'https://ececomplaintportal.netlify.app',
+      'https://ececomplaintportal.netlify.app/',
+    ],
     credentials: true,
   })
 );
