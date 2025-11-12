@@ -1,0 +1,36 @@
+const express = require('express');
+const { body } = require('express-validator');
+const {
+  register,
+  login,
+  verifyEmail,
+  forgotPassword,
+  resetPassword,
+  getMe,
+} = require('../controllers/authController');
+const { protect } = require('../middleware/auth');
+
+const router = express.Router();
+
+// Validation rules
+const registerValidation = [
+  body('name').trim().isLength({ min: 2, max: 50 }).withMessage('Name must be 2-50 characters'),
+  body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+  body('rollNumber').optional().trim().isLength({ min: 1 }).withMessage('Roll number is required for students'),
+];
+
+const loginValidation = [
+  body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
+  body('password').exists().withMessage('Password is required'),
+];
+
+// Routes
+router.post('/register', registerValidation, register);
+router.post('/login', loginValidation, login);
+router.post('/verify-email', verifyEmail);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
+router.get('/me', protect, getMe);
+
+module.exports = router;
