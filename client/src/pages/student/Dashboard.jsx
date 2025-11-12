@@ -17,23 +17,22 @@ const StudentDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await api.get('/api/complaints/my-complaints');
-
-      const complaints = response.data.complaints;
-      const totalComplaints = complaints.length;
-      const pendingComplaints = complaints.filter(c => c.status === 'Pending').length;
-      const resolvedComplaints = complaints.filter(c => c.status === 'Resolved').length;
-      const recentComplaints = complaints.slice(0, 5);
-
+      // For demo purposes, just set some mock data
       setStats({
-        totalComplaints,
-        pendingComplaints,
-        resolvedComplaints,
-        recentComplaints,
+        totalComplaints: 0,
+        pendingComplaints: 0,
+        resolvedComplaints: 0,
+        recentComplaints: [],
       });
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      // Still set mock data on error
+      setStats({
+        totalComplaints: 0,
+        pendingComplaints: 0,
+        resolvedComplaints: 0,
+        recentComplaints: [],
+      });
     } finally {
       setLoading(false);
     }
