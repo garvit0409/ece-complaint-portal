@@ -26,9 +26,10 @@ const Login = () => {
       const response = await api.post('/api/auth/login', formData);
 
       if (response.data.success) {
-        // Store token in localStorage
+        // Store token and role in localStorage
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('role', response.data.user.role);
 
         toast.success('Login successful!');
 
