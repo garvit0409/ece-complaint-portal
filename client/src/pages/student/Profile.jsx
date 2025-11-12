@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios from 'axios';
+import api from '../../services/api';
 
 const StudentProfile = () => {
   const [user, setUser] = useState(null);
@@ -20,9 +20,7 @@ const StudentProfile = () => {
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('/api/auth/me', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get('/api/auth/me');
 
       if (response.data.success) {
         setUser(response.data.user);
@@ -52,9 +50,7 @@ const StudentProfile = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put('/api/users/profile', formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.put('/api/users/profile', formData);
 
       if (response.data.success) {
         setUser(response.data.user);

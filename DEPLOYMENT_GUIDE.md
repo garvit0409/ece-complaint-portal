@@ -109,29 +109,29 @@ PORT=5000
 NODE_ENV=production
 
 # MongoDB Configuration (Production)
-MONGODB_URI=mongodb+srv://eceportaluser:your_password@ece-portal-cluster.xxxxx.mongodb.net/ece-complaint-portal?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://garvitarora:Garvit123@cluster0.0zsndfp.mongodb.net/ece-complaint-portal?retryWrites=true&w=majority&appName=Cluster0
 
 # JWT Configuration
-JWT_SECRET=your_super_secret_jwt_key_change_this_in_production_123456789
+JWT_SECRET=10284f04ee040e298baa38b03ff0c6083a749afbdf6c5c3caabe996ef4599db4add3f42b1288ad732d7f5999dded07eb11ab0f0d700dd5d861f1d3a8f72f1c80your_super_secret_jwt_key_change_this_in_production_123456789
 JWT_EXPIRE=7d
 
 # Email Configuration (Gmail SMTP)
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASSWORD=your_16_character_app_password
+EMAIL_USER=ecedepartment100@gmail.com
+EMAIL_PASSWORD=xqasujvjfwkxapsd
 EMAIL_FROM=ECE Complaint Portal <noreply@eceportal.com>
 
 # Cloudinary Configuration
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
+CLOUDINARY_CLOUD_NAME=dcbtxnaep
+CLOUDINARY_API_KEY=726952417979345
+CLOUDINARY_API_SECRET=CMBXq6xNa528Rdd0vElmdpk_PHo
 
 # Frontend URL (Update after deploying frontend)
 CLIENT_URL=https://your-frontend-domain.vercel.app
 
 # Encryption Key for Anonymous Complaints
-ENCRYPTION_KEY=32_character_encryption_key_for_anonymous_complaints_12345678901234567890123456789012
+ENCRYPTION_KEY=3e589c32d1249a83fa6ba003be957cfaf93f19d553f5ad4092a7f093b358821382_character_encryption_key_for_anonymous_complaints_12345678901234567890123456789012
 ```
 
 ---
@@ -158,15 +158,15 @@ ENCRYPTION_KEY=32_character_encryption_key_for_anonymous_complaints_123456789012
 - Add all variables from your `server/.env` file:
   - `PORT=5000`
   - `NODE_ENV=production`
-  - `MONGODB_URI=your_mongodb_connection_string`
-  - `JWT_SECRET=your_jwt_secret`
-  - `EMAIL_USER=your_email@gmail.com`
-  - `EMAIL_PASSWORD=your_app_password`
-  - `CLOUDINARY_CLOUD_NAME=your_cloud_name`
-  - `CLOUDINARY_API_KEY=your_api_key`
-  - `CLOUDINARY_API_SECRET=your_api_secret`
+  - `MONGODB_URI=mongodb+srv://garvitarora:Garvit123@cluster0.0zsndfp.mongodb.net/ece-complaint-portal?retryWrites=true&w=majority&appName=Cluster0`
+  - `JWT_SECRET=10284f04ee040e298baa38b03ff0c6083a749afbdf6c5c3caabe996ef4599db4add3f42b1288ad732d7f5999dded07eb11ab0f0d700dd5d861f1d3a8f72f1c80your_super_secret_jwt_key_change_this_in_production_123456789`
+  - `EMAIL_USER=ecedepartment100@gmail.com`
+  - `EMAIL_PASSWORD=xqasujvjfwkxapsd`
+  - `CLOUDINARY_CLOUD_NAME=dcbtxnaep`
+  - `CLOUDINARY_API_KEY=726952417979345`
+  - `CLOUDINARY_API_SECRET=CMBXq6xNa528Rdd0vElmdpk_PHo`
   - `CLIENT_URL=https://your-netlify-app.netlify.app`
-  - `ENCRYPTION_KEY=your_32_character_key`
+  - `ENCRYPTION_KEY=3e589c32d1249a83fa6ba003be957cfaf93f19d553f5ad4092a7f093b358821382_character_encryption_key_for_anonymous_complaints_12345678901234567890123456789012`
 
 ### **4. Get Backend URL**
 - After deployment, copy the generated URL

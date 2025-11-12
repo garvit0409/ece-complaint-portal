@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../services/api';
 
 const MyComplaints = () => {
   const [complaints, setComplaints] = useState([]);
@@ -14,9 +14,7 @@ const MyComplaints = () => {
   const fetchComplaints = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('/api/complaints/my-complaints', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get('/api/complaints/my-complaints');
       setComplaints(response.data.complaints);
     } catch (error) {
       console.error('Error fetching complaints:', error);

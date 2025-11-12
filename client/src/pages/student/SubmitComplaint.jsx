@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios from 'axios';
+import api from '../../services/api';
 
 const SubmitComplaint = () => {
   const [formData, setFormData] = useState({
@@ -37,9 +37,7 @@ const SubmitComplaint = () => {
   const fetchTeachers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('/api/users/teachers', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get('/api/users/teachers');
       setTeachers(response.data.teachers);
     } catch (error) {
       console.error('Error fetching teachers:', error);
@@ -74,10 +72,9 @@ const SubmitComplaint = () => {
         const formDataUpload = new FormData();
         formDataUpload.append('file', file);
 
-        const response = await axios.post('/api/upload', formDataUpload, {
+        const response = await api.post('/api/upload', formDataUpload, {
           headers: {
             'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
 
@@ -114,9 +111,7 @@ const SubmitComplaint = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('/api/complaints', formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.post('/api/complaints', formData);
 
       if (response.data.success) {
         toast.success('Complaint submitted successfully!');

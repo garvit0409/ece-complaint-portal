@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import axios from 'axios';
+import api from '../../services/api';
 
 const Feedback = () => {
   const { complaintId } = useParams();
@@ -21,9 +21,7 @@ const Feedback = () => {
   const fetchComplaint = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`/api/complaints/search/${complaintId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get(`/api/complaints/search/${complaintId}`);
 
       if (response.data.success) {
         setComplaint(response.data.complaint);
@@ -56,9 +54,7 @@ const Feedback = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(`/api/complaints/${complaintId}/feedback`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.post(`/api/complaints/${complaintId}/feedback`, formData);
 
       if (response.data.success) {
         toast.success('Thank you for your feedback!');

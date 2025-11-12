@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../services/api';
 
 const StudentDashboard = () => {
   const [stats, setStats] = useState({
@@ -18,9 +18,7 @@ const StudentDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('/api/complaints/my-complaints', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get('/api/complaints/my-complaints');
 
       const complaints = response.data.complaints;
       const totalComplaints = complaints.length;

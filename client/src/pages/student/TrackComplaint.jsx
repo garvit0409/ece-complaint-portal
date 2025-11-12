@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../services/api';
 
 const TrackComplaint = () => {
   const { complaintId } = useParams();
@@ -15,9 +15,7 @@ const TrackComplaint = () => {
   const fetchComplaint = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`/api/complaints/search/${complaintId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get(`/api/complaints/search/${complaintId}`);
 
       if (response.data.success) {
         setComplaint(response.data.complaint);
