@@ -46,6 +46,10 @@ app.use(
       'https://ece-complaint-portal.vercel.app/',
       'https://ece-complaint-portal2.vercel.app',
       'https://ece-complaint-portal2.vercel.app/',
+      'https://ece-complaint-portal.onrender.com',
+      'https://ece-complaint-portal.onrender.com/',
+      'https://ece-complaint-portal.vercel.app',
+      'https://ece-complaint-portal.vercel.app/',
     ],
     credentials: true,
   })

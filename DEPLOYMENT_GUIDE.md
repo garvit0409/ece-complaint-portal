@@ -128,7 +128,7 @@ CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 
 # Frontend URL (Update after deploying frontend)
-CLIENT_URL=https://ece-complaint-portal2.vercel.app
+CLIENT_URL=https://ece-complaint-portal.vercel.app
 
 # Encryption Key for Anonymous Complaints
 ENCRYPTION_KEY=32_character_encryption_key_for_anonymous_complaints_12345678901234567890123456789012
@@ -169,7 +169,7 @@ ENCRYPTION_KEY=32_character_encryption_key_for_anonymous_complaints_123456789012
   - `CLOUDINARY_CLOUD_NAME=your_cloud_name`
   - `CLOUDINARY_API_KEY=your_api_key`
   - `CLOUDINARY_API_SECRET=your_api_secret`
-  - `CLIENT_URL=https://ece-complaint-portal2.vercel.app`
+  - `CLIENT_URL=https://ece-complaint-portal.vercel.app`
   - `ENCRYPTION_KEY=32_character_encryption_key_for_anonymous_complaints_12345678901234567890123456789012`
 
 ### **4. Get Backend URL**
@@ -200,7 +200,7 @@ ENCRYPTION_KEY=32_character_encryption_key_for_anonymous_complaints_123456789012
 
 ### **4. Update Backend CLIENT_URL**
 - Update your Render environment variable:
-- `CLIENT_URL=https://ece-complaint-portal2.vercel.app`
+- `CLIENT_URL=https://ece-complaint-portal.vercel.app`
 
 ---
 
@@ -399,4 +399,4 @@ Already configured with `helmet` middleware
 
 **🎉 Congratulations! Your ECE Complaint Portal is now live and fully functional!**
 
-**Access your application at:** `https://ece-complaint-portal2.vercel.app`
+**Access your application at:** `https://ece-complaint-portal.vercel.app`

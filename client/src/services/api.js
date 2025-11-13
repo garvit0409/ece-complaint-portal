@@ -1,5 +1,5 @@
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://ece-complaint-portal-backend.onrender.com';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://ece-complaint-portal.onrender.com';
 
 // Create axios instance with default config
 import axios from 'axios';
