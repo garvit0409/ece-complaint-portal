@@ -30,6 +30,12 @@ const userSchema = new mongoose.Schema(
       enum: ['student', 'teacher', 'mentor', 'hod'],
       required: true,
     },
+    // Teacher/Mentor/HOD specific fields
+    employeeId: {
+      type: String,
+      sparse: true,
+      unique: true,
+    },
     // Student specific fields
     rollNumber: {
       type: String,
@@ -49,12 +55,6 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
-    // Teacher/Mentor/HOD specific fields
-    employeeId: {
-      type: String,
-      sparse: true,
-      unique: true,
-    },
     assignedMentor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -64,6 +64,22 @@ const userSchema = new mongoose.Schema(
     },
     contactNumber: {
       type: String,
+    },
+    // Registration status for teachers/mentors
+    isApproved: {
+      type: Boolean,
+      default: function() {
+        // Students and HOD are auto-approved, teachers/mentors need approval
+        return this.role === 'student' || this.role === 'hod';
+      },
+    },
+    registrationStatus: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected'],
+      default: function() {
+        // Students and HOD are auto-approved, teachers/mentors are pending
+        return (this.role === 'student' || this.role === 'hod') ? 'approved' : 'pending';
+      },
     },
     // Common fields
     department: {
@@ -106,14 +122,14 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 userSchema.methods.generateEmailVerificationToken = function () {
   const crypto = require('crypto');
   const verificationToken = crypto.randomBytes(20).toString('hex');
-  
+
   this.emailVerificationToken = crypto
     .createHash('sha256')
     .update(verificationToken)
     .digest('hex');
-  
+
   this.emailVerificationExpire = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
-  
+
   return verificationToken;
 };
 
@@ -121,14 +137,14 @@ userSchema.methods.generateEmailVerificationToken = function () {
 userSchema.methods.generateResetPasswordToken = function () {
   const crypto = require('crypto');
   const resetToken = crypto.randomBytes(20).toString('hex');
-  
+
   this.resetPasswordToken = crypto
     .createHash('sha256')
     .update(resetToken)
     .digest('hex');
-  
+
   this.resetPasswordExpire = Date.now() + 30 * 60 * 1000; // 30 minutes
-  
+
   return resetToken;
 };
 

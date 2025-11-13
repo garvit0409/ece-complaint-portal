@@ -1,6 +1,9 @@
 const express = require('express');
 const { body } = require('express-validator');
 const {
+  getPendingRegistrations,
+  approveRegistration,
+  rejectRegistration,
   getAllComplaints,
   getComplaintById,
   updateComplaintStatus,
@@ -47,6 +50,10 @@ const lateralStudentValidation = [
 ];
 
 // Routes
+router.get('/pending-registrations', protect, getPendingRegistrations);
+router.put('/approve-registration/:id', protect, approveRegistration);
+router.put('/reject-registration/:id', protect, rejectRegistration);
+
 router.get('/complaints', protect, getAllComplaints);
 router.get('/complaints/:id', protect, getComplaintById);
 router.put('/complaints/:id/status', protect, updateComplaintStatus);

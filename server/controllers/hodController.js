@@ -4,6 +4,156 @@ const StudentPromotion = require('../models/StudentPromotion');
 const AuditLog = require('../models/AuditLog');
 const { encrypt, decrypt } = require('../utils/encryption');
 
+// @desc    Get pending teacher/mentor registrations
+// @route   GET /api/hod/pending-registrations
+// @access  Private (HOD)
+const getPendingRegistrations = async (req, res) => {
+  try {
+    const pendingUsers = await User.find({
+      role: { $in: ['teacher', 'mentor'] },
+      registrationStatus: 'pending',
+      isActive: true,
+    })
+      .select('name email employeeId specialization contactNumber role createdAt')
+      .sort({ createdAt: 1 });
+
+    res.json({
+      success: true,
+      pendingUsers,
+    });
+  } catch (error) {
+    console.error('Get pending registrations error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+    });
+  }
+};
+
+// @desc    Approve teacher/mentor registration
+// @route   PUT /api/hod/approve-registration/:id
+// @access  Private (HOD)
+const approveRegistration = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const hodId = req.user.id;
+
+    const user = await User.findById(userId);
+    if (!user || !['teacher', 'mentor'].includes(user.role)) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found or not a teacher/mentor',
+      });
+    }
+
+    if (user.registrationStatus !== 'pending') {
+      return res.status(400).json({
+        success: false,
+        message: 'User registration is not pending',
+      });
+    }
+
+    // Approve the registration
+    user.registrationStatus = 'approved';
+    user.isApproved = true;
+    await user.save();
+
+    // Log the action
+    await AuditLog.create({
+      userId: hodId,
+      action: 'REGISTRATION_APPROVED',
+      details: {
+        approvedUserId: user._id,
+        approvedUserName: user.name,
+        approvedUserRole: user.role,
+        approvedUserEmail: user.email,
+      },
+    });
+
+    res.json({
+      success: true,
+      message: `${user.role.charAt(0).toUpperCase() + user.role.slice(1)} registration approved successfully`,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        employeeId: user.employeeId,
+        registrationStatus: user.registrationStatus,
+      },
+    });
+  } catch (error) {
+    console.error('Approve registration error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+    });
+  }
+};
+
+// @desc    Reject teacher/mentor registration
+// @route   PUT /api/hod/reject-registration/:id
+// @access  Private (HOD)
+const rejectRegistration = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { reason } = req.body;
+    const hodId = req.user.id;
+
+    const user = await User.findById(userId);
+    if (!user || !['teacher', 'mentor'].includes(user.role)) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found or not a teacher/mentor',
+      });
+    }
+
+    if (user.registrationStatus !== 'pending') {
+      return res.status(400).json({
+        success: false,
+        message: 'User registration is not pending',
+      });
+    }
+
+    // Reject the registration
+    user.registrationStatus = 'rejected';
+    user.isApproved = false;
+    await user.save();
+
+    // Log the action
+    await AuditLog.create({
+      userId: hodId,
+      action: 'REGISTRATION_REJECTED',
+      details: {
+        rejectedUserId: user._id,
+        rejectedUserName: user.name,
+        rejectedUserRole: user.role,
+        rejectedUserEmail: user.email,
+        reason: reason || 'No reason provided',
+      },
+    });
+
+    res.json({
+      success: true,
+      message: `${user.role.charAt(0).toUpperCase() + user.role.slice(1)} registration rejected`,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        employeeId: user.employeeId,
+        registrationStatus: user.registrationStatus,
+      },
+    });
+  } catch (error) {
+    console.error('Reject registration error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+    });
+  }
+};
+
 // @desc    Get all complaints
 // @route   GET /api/hod/complaints
 // @access  Private (HOD)
@@ -956,6 +1106,9 @@ const updateSettings = async (req, res) => {
 };
 
 module.exports = {
+  getPendingRegistrations,
+  approveRegistration,
+  rejectRegistration,
   getAllComplaints,
   getComplaintById,
   updateComplaintStatus,

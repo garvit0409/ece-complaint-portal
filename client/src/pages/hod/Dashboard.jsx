@@ -1,6 +1,80 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import api from '../../services/api';
 
 const HodDashboard = () => {
+  const [stats, setStats] = useState({
+    totalComplaints: 0,
+    pendingComplaints: 0,
+    resolvedComplaints: 0,
+    escalatedComplaints: 0,
+    teacherCount: 0,
+    mentorCount: 0,
+    studentCount: 0,
+  });
+  const [pendingRegistrations, setPendingRegistrations] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const [statsResponse, registrationsResponse] = await Promise.all([
+        api.get('/api/hod/dashboard-stats'),
+        api.get('/api/hod/pending-registrations'),
+      ]);
+
+      if (statsResponse.data.success) {
+        setStats(statsResponse.data.stats);
+      }
+
+      if (registrationsResponse.data.success) {
+        setPendingRegistrations(registrationsResponse.data.pendingUsers);
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      toast.error('Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApproveRegistration = async (userId) => {
+    try {
+      const response = await api.put(`/api/hod/approve-registration/${userId}`);
+      if (response.data.success) {
+        toast.success(response.data.message);
+        fetchDashboardData(); // Refresh data
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to approve registration');
+    }
+  };
+
+  const handleRejectRegistration = async (userId) => {
+    const reason = prompt('Enter reason for rejection (optional):');
+    try {
+      const response = await api.put(`/api/hod/reject-registration/${userId}`, { reason });
+      if (response.data.success) {
+        toast.success(response.data.message);
+        fetchDashboardData(); // Refresh data
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to reject registration');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow">
@@ -37,7 +111,7 @@ const HodDashboard = () => {
                     <dt className="text-sm font-medium text-gray-500 truncate">
                       Total Complaints
                     </dt>
-                    <dd className="text-lg font-medium text-gray-900">0</dd>
+                    <dd className="text-lg font-medium text-gray-900">{stats.totalComplaints}</dd>
                   </dl>
                 </div>
               </div>
@@ -67,7 +141,7 @@ const HodDashboard = () => {
                     <dt className="text-sm font-medium text-gray-500 truncate">
                       Teachers
                     </dt>
-                    <dd className="text-lg font-medium text-gray-900">0</dd>
+                    <dd className="text-lg font-medium text-gray-900">{stats.teacherCount}</dd>
                   </dl>
                 </div>
               </div>
@@ -97,7 +171,7 @@ const HodDashboard = () => {
                     <dt className="text-sm font-medium text-gray-500 truncate">
                       Students
                     </dt>
-                    <dd className="text-lg font-medium text-gray-900">0</dd>
+                    <dd className="text-lg font-medium text-gray-900">{stats.studentCount}</dd>
                   </dl>
                 </div>
               </div>
@@ -145,6 +219,54 @@ const HodDashboard = () => {
           </div>
         </div>
 
+        {/* Pending Registrations Section */}
+        {pendingRegistrations.length > 0 && (
+          <div className="mt-8">
+            <div className="bg-white shadow rounded-lg">
+              <div className="px-4 py-5 sm:p-6">
+                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                  Pending Faculty Registrations ({pendingRegistrations.length})
+                </h3>
+                <div className="space-y-4">
+                  {pendingRegistrations.map((user) => (
+                    <div key={user.id} className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-900">{user.name}</h4>
+                          <p className="text-sm text-gray-600">{user.email}</p>
+                          <p className="text-sm text-gray-600">
+                            {user.role.charAt(0).toUpperCase() + user.role.slice(1)} • Employee ID: {user.employeeId}
+                          </p>
+                          {user.specialization && (
+                            <p className="text-sm text-gray-600">Specialization: {user.specialization}</p>
+                          )}
+                          <p className="text-xs text-gray-500">
+                            Registered: {new Date(user.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleApproveRegistration(user.id)}
+                            className="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 transition-colors text-sm"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleRejectRegistration(user.id)}
+                            className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition-colors text-sm"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <div className="bg-white shadow rounded-lg">
             <div className="px-4 py-5 sm:p-6">
@@ -176,49 +298,19 @@ const HodDashboard = () => {
               <div className="space-y-4">
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Pending Complaints</span>
-                  <span className="text-sm font-medium text-gray-900">0</span>
+                  <span className="text-sm font-medium text-gray-900">{stats.pendingComplaints}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Resolved This Month</span>
-                  <span className="text-sm font-medium text-gray-900">0</span>
+                  <span className="text-sm text-gray-600">Resolved Complaints</span>
+                  <span className="text-sm font-medium text-gray-900">{stats.resolvedComplaints}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Average Resolution Time</span>
-                  <span className="text-sm font-medium text-gray-900">0 days</span>
+                  <span className="text-sm text-gray-600">Escalated Complaints</span>
+                  <span className="text-sm font-medium text-gray-900">{stats.escalatedComplaints}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Student Satisfaction</span>
-                  <span className="text-sm font-medium text-gray-900">0%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-8">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-5 w-5 text-yellow-400"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-yellow-800">
-                  HOD Portal Under Development
-                </h3>
-                <div className="mt-2 text-sm text-yellow-700">
-                  <p>
-                    This is a placeholder dashboard. Full HOD functionality including teacher management, student management, lateral entry registration, and comprehensive analytics will be available once the database is connected and all features are implemented.
-                  </p>
+                  <span className="text-sm text-gray-600">Active Mentors</span>
+                  <span className="text-sm font-medium text-gray-900">{stats.mentorCount}</span>
                 </div>
               </div>
             </div>

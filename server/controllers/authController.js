@@ -14,7 +14,7 @@ const generateToken = (id) => {
 // @access  Public
 const register = async (req, res) => {
   try {
-    const { name, email, password, rollNumber } = req.body;
+    const { name, email, password, role, rollNumber, employeeId, specialization, contactNumber } = req.body;
 
     // Check if user exists
     const userExists = await User.findOne({ email });
@@ -25,16 +25,38 @@ const register = async (req, res) => {
       });
     }
 
+    // Prevent unauthorized HOD registration
+    if (role === 'hod') {
+      return res.status(403).json({
+        success: false,
+        message: 'HOD accounts cannot be created through self-registration. Please contact system administrator.',
+      });
+    }
+
+    // Set registration status based on role
+    let registrationStatus = 'approved';
+    let isApproved = true;
+
+    if (role === 'teacher' || role === 'mentor') {
+      registrationStatus = 'pending';
+      isApproved = false;
+    }
+
     // Create user (password will be hashed by pre-save middleware)
     const user = await User.create({
       name,
       email,
       password, // Plain password - will be hashed by middleware
-      rollNumber,
-      role: 'student', // Default role for registration
-      year: 1, // Default year for new students
+      role: role || 'student',
+      rollNumber: role === 'student' ? rollNumber : undefined,
+      employeeId: role !== 'student' ? employeeId : undefined,
+      specialization: role !== 'student' ? specialization : undefined,
+      contactNumber: role !== 'student' ? contactNumber : undefined,
+      year: role === 'student' ? 1 : undefined, // Default year for new students
       isEmailVerified: true, // Skip email verification
       isActive: true,
+      isApproved,
+      registrationStatus,
     });
 
     // Generate token
@@ -42,7 +64,9 @@ const register = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'User registered successfully.',
+      message: registrationStatus === 'pending'
+        ? 'Registration submitted! Your account is pending HOD approval.'
+        : 'User registered successfully.',
       token,
       user: {
         id: user._id,
@@ -50,6 +74,7 @@ const register = async (req, res) => {
         email: user.email,
         role: user.role,
         rollNumber: user.rollNumber,
+        employeeId: user.employeeId,
         year: user.year,
       },
     });
@@ -72,7 +97,7 @@ const login = async (req, res) => {
     // Check for user
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      // For demo purposes, create a test user if login fails
+      // For demo purposes, create demo users if login fails
       if (email === 'test@example.com' && password === 'test123') {
         const testUser = await User.create({
           name: 'Test Student',
@@ -83,6 +108,8 @@ const login = async (req, res) => {
           year: 1,
           isEmailVerified: true,
           isActive: true,
+          isApproved: true,
+          registrationStatus: 'approved',
         });
 
         const token = generateToken(testUser._id);
@@ -103,9 +130,110 @@ const login = async (req, res) => {
         });
       }
 
+      // Demo teacher login
+      if (email === 'teacher@example.com' && password === 'teacher123') {
+        const teacherUser = await User.create({
+          name: 'Demo Teacher',
+          email: 'teacher@example.com',
+          password: 'teacher123',
+          employeeId: 'T001',
+          role: 'teacher',
+          specialization: 'Computer Science',
+          isEmailVerified: true,
+          isActive: true,
+          isApproved: true,
+          registrationStatus: 'approved',
+        });
+
+        const token = generateToken(teacherUser._id);
+        return res.json({
+          success: true,
+          message: 'Login successful',
+          token,
+          user: {
+            id: teacherUser._id,
+            name: teacherUser.name,
+            email: teacherUser.email,
+            role: teacherUser.role,
+            employeeId: teacherUser.employeeId,
+            specialization: teacherUser.specialization,
+          },
+        });
+      }
+
+      // Demo mentor login
+      if (email === 'mentor@example.com' && password === 'mentor123') {
+        const mentorUser = await User.create({
+          name: 'Demo Mentor',
+          email: 'mentor@example.com',
+          password: 'mentor123',
+          employeeId: 'M001',
+          role: 'mentor',
+          specialization: 'Electronics',
+          isEmailVerified: true,
+          isActive: true,
+          isApproved: true,
+          registrationStatus: 'approved',
+        });
+
+        const token = generateToken(mentorUser._id);
+        return res.json({
+          success: true,
+          message: 'Login successful',
+          token,
+          user: {
+            id: mentorUser._id,
+            name: mentorUser.name,
+            email: mentorUser.email,
+            role: mentorUser.role,
+            employeeId: mentorUser.employeeId,
+            specialization: mentorUser.specialization,
+          },
+        });
+      }
+
+      // Demo HOD login
+      if (email === 'hod@example.com' && password === 'hod123') {
+        const hodUser = await User.create({
+          name: 'Demo HOD',
+          email: 'hod@example.com',
+          password: 'hod123',
+          employeeId: 'H001',
+          role: 'hod',
+          specialization: 'Department Head',
+          isEmailVerified: true,
+          isActive: true,
+          isApproved: true,
+          registrationStatus: 'approved',
+        });
+
+        const token = generateToken(hodUser._id);
+        return res.json({
+          success: true,
+          message: 'Login successful',
+          token,
+          user: {
+            id: hodUser._id,
+            name: hodUser.name,
+            email: hodUser.email,
+            role: hodUser.role,
+            employeeId: hodUser.employeeId,
+            specialization: hodUser.specialization,
+          },
+        });
+      }
+
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials',
+      });
+    }
+
+    // Check if user is approved (for teachers/mentors)
+    if ((user.role === 'teacher' || user.role === 'mentor') && user.registrationStatus !== 'approved') {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account is pending HOD approval. Please contact the HOD.',
       });
     }
 
@@ -139,6 +267,7 @@ const login = async (req, res) => {
         email: user.email,
         role: user.role,
         rollNumber: user.rollNumber,
+        employeeId: user.employeeId,
         year: user.year,
         assignedTeacher: user.assignedTeacher,
         assignedMentor: user.assignedMentor,
@@ -168,6 +297,7 @@ const getMe = async (req, res) => {
         email: user.email,
         role: user.role,
         rollNumber: user.rollNumber,
+        employeeId: user.employeeId,
         year: user.year,
         assignedTeacher: user.assignedTeacher,
         assignedMentor: user.assignedMentor,
