@@ -42,6 +42,10 @@ app.use(
       process.env.CLIENT_URL || 'http://localhost:5173',
       'https://ececomplaintportal.netlify.app',
       'https://ececomplaintportal.netlify.app/',
+      'https://ece-complaint-portal.vercel.app',
+      'https://ece-complaint-portal.vercel.app/',
+      'https://ece-complaint-portal2.vercel.app',
+      'https://ece-complaint-portal2.vercel.app/',
     ],
     credentials: true,
   })

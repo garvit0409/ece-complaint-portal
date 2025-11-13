@@ -12,8 +12,8 @@ This guide will help you deploy your ECE Complaint Portal to production with ful
 1. **MongoDB Atlas** (Database) - Free tier available
 2. **Gmail Account** (Email notifications) - App password required
 3. **Cloudinary** (File uploads) - Free tier available
-4. **Netlify** (Frontend hosting) - Free tier available
-5. **Render** (Backend hosting) - Free tier available
+4. **Render** (Backend hosting) - Free tier available
+5. **Vercel** (Frontend hosting) - Free tier available
 
 ---
 
@@ -38,7 +38,7 @@ This guide will help you deploy your ECE Complaint Portal to production with ful
 
 ### **4. Whitelist IP Address**
 - Go to "Network Access" → "Add IP Address"
-- Add IP: `0.0.0.0/0` (Allow access from anywhere)
+- Add IP: `0.0.0/0` (Allow access from anywhere)
 - Description: "Allow all IPs for development"
 
 ### **5. Get Connection String**
@@ -109,29 +109,29 @@ PORT=5000
 NODE_ENV=production
 
 # MongoDB Configuration (Production)
-MONGODB_URI=mongodb+srv://garvitarora:Garvit123@cluster0.0zsndfp.mongodb.net/ece-complaint-portal?retryWrites=true&w=majority&appName=Cluster0
+MONGODB_URI=mongodb+srv://eceportaluser:your_password@ece-portal-cluster.xxxxx.mongodb.net/ece-complaint-portal?retryWrites=true&w=majority
 
 # JWT Configuration
-JWT_SECRET=10284f04ee040e298baa38b03ff0c6083a749afbdf6c5c3caabe996ef4599db4add3f42b1288ad732d7f5999dded07eb11ab0f0d700dd5d861f1d3a8f72f1c80your_super_secret_jwt_key_change_this_in_production_123456789
+JWT_SECRET=your_super_secret_jwt_key_change_this_in_production_123456789
 JWT_EXPIRE=7d
 
 # Email Configuration (Gmail SMTP)
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
-EMAIL_USER=ecedepartment100@gmail.com
-EMAIL_PASSWORD=xqasujvjfwkxapsd
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASSWORD=your_16_character_app_password
 EMAIL_FROM=ECE Complaint Portal <noreply@eceportal.com>
 
 # Cloudinary Configuration
-CLOUDINARY_CLOUD_NAME=dcbtxnaep
-CLOUDINARY_API_KEY=726952417979345
-CLOUDINARY_API_SECRET=CMBXq6xNa528Rdd0vElmdpk_PHo
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 
 # Frontend URL (Update after deploying frontend)
-CLIENT_URL=https://your-frontend-domain.vercel.app
+CLIENT_URL=https://ece-complaint-portal2.vercel.app
 
 # Encryption Key for Anonymous Complaints
-ENCRYPTION_KEY=3e589c32d1249a83fa6ba003be957cfaf93f19d553f5ad4092a7f093b358821382_character_encryption_key_for_anonymous_complaints_12345678901234567890123456789012
+ENCRYPTION_KEY=32_character_encryption_key_for_anonymous_complaints_12345678901234567890123456789012
 ```
 
 ---
@@ -158,15 +158,19 @@ ENCRYPTION_KEY=3e589c32d1249a83fa6ba003be957cfaf93f19d553f5ad4092a7f093b35882138
 - Add all variables from your `server/.env` file:
   - `PORT=5000`
   - `NODE_ENV=production`
-  - `MONGODB_URI=mongodb+srv://garvitarora:Garvit123@cluster0.0zsndfp.mongodb.net/ece-complaint-portal?retryWrites=true&w=majority&appName=Cluster0`
-  - `JWT_SECRET=10284f04ee040e298baa38b03ff0c6083a749afbdf6c5c3caabe996ef4599db4add3f42b1288ad732d7f5999dded07eb11ab0f0d700dd5d861f1d3a8f72f1c80your_super_secret_jwt_key_change_this_in_production_123456789`
-  - `EMAIL_USER=ecedepartment100@gmail.com`
-  - `EMAIL_PASSWORD=xqasujvjfwkxapsd`
-  - `CLOUDINARY_CLOUD_NAME=dcbtxnaep`
-  - `CLOUDINARY_API_KEY=726952417979345`
-  - `CLOUDINARY_API_SECRET=CMBXq6xNa528Rdd0vElmdpk_PHo`
-  - `CLIENT_URL=https://your-netlify-app.netlify.app`
-  - `ENCRYPTION_KEY=3e589c32d1249a83fa6ba003be957cfaf93f19d553f5ad4092a7f093b358821382_character_encryption_key_for_anonymous_complaints_12345678901234567890123456789012`
+  - `MONGODB_URI=mongodb+srv://eceportaluser:your_password@ece-portal-cluster.xxxxx.mongodb.net/ece-complaint-portal?retryWrites=true&w=majority`
+  - `JWT_SECRET=your_super_secret_jwt_key_change_this_in_production_123456789`
+  - `JWT_EXPIRE=7d`
+  - `EMAIL_HOST=smtp.gmail.com`
+  - `EMAIL_PORT=587`
+  - `EMAIL_USER=your_email@gmail.com`
+  - `EMAIL_PASSWORD=your_16_character_app_password`
+  - `EMAIL_FROM=ECE Complaint Portal <noreply@eceportal.com>`
+  - `CLOUDINARY_CLOUD_NAME=your_cloud_name`
+  - `CLOUDINARY_API_KEY=your_api_key`
+  - `CLOUDINARY_API_SECRET=your_api_secret`
+  - `CLIENT_URL=https://ece-complaint-portal2.vercel.app`
+  - `ENCRYPTION_KEY=32_character_encryption_key_for_anonymous_complaints_12345678901234567890123456789012`
 
 ### **4. Get Backend URL**
 - After deployment, copy the generated URL
@@ -174,44 +178,43 @@ ENCRYPTION_KEY=3e589c32d1249a83fa6ba003be957cfaf93f19d553f5ad4092a7f093b35882138
 
 ---
 
-## 🌐 Step 6: Deploy Frontend (Netlify)
+## 🌐 Step 6: Deploy Frontend (Vercel)
 
-### **1. Create Netlify Account**
-- Go to [netlify.com](https://netlify.com)
+### **1. Create Vercel Account**
+- Go to [vercel.com](https://vercel.com)
 - Sign up with GitHub
 - Connect your GitHub account
 
 ### **2. Deploy Frontend**
-- Click "Add new site" → "Import an existing project"
-- Connect your GitHub repository
-- Configure build settings:
-  - **Base directory**: `client`
-  - **Build command**: `npm run build`
-  - **Publish directory**: `dist`
+- Click "Add New..." → "Project"
+- Import your GitHub repository
+- Configure project:
+  - **Framework Preset**: `Vite`
+  - **Root Directory**: `client`
+  - **Build Command**: `npm run build`
+  - **Output Directory**: `dist`
 
 ### **3. Add Environment Variables**
-- Go to Site settings → Environment variables
+- Go to Project Settings → Environment Variables
 - Add: `VITE_API_URL=https://your-backend-url.onrender.com`
 
 ### **4. Update Backend CLIENT_URL**
 - Update your Render environment variable:
-- `CLIENT_URL=https://your-netlify-app.netlify.app`
+- `CLIENT_URL=https://ece-complaint-portal2.vercel.app`
 
 ---
 
 ## 🔄 Step 7: Update API Base URL
 
 ### **Frontend API Configuration**
-Update `client/src/services/api.js` (create if doesn't exist):
+Update `client/src/services/api.js`:
 
 ```javascript
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+// API Configuration
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://ece-complaint-portal-backend.onrender.com';
 
 export default API_BASE_URL;
 ```
-
-### **Update All API Calls**
-Make sure all your components use this base URL for API calls.
 
 ---
 
@@ -281,7 +284,7 @@ Already configured with `helmet` middleware
 - Monitor connection count and query performance
 
 ### **2. Application Monitoring**
-- Railway Dashboard → Logs
+- Render Dashboard → Logs
 - Vercel Dashboard → Functions & Analytics
 
 ### **3. Email Monitoring**
@@ -330,7 +333,7 @@ Already configured with `helmet` middleware
 | MongoDB Atlas | 512MB storage | $0.08/GB/month |
 | Cloudinary | 25GB storage, 25GB monthly | $0.01/GB |
 | Render | 750 hours/month, 750MB RAM | $7/month |
-| Netlify | 100GB bandwidth/month | $19/month |
+| Vercel | 100GB bandwidth/month | $20/month |
 | Gmail | 500 emails/day | N/A (use SendGrid) |
 
 **Total Estimated Cost:** $0/month (staying within free tiers)
@@ -365,12 +368,12 @@ Already configured with `helmet` middleware
 ### **Documentation Links:**
 - [MongoDB Atlas Docs](https://docs.mongodb.com/atlas/)
 - [Render Docs](https://docs.render.com/)
-- [Netlify Docs](https://docs.netlify.com/)
+- [Vercel Docs](https://vercel.com/docs)
 - [Cloudinary Docs](https://cloudinary.com/documentation)
 
 ### **Help Resources:**
 - Render Community: [render.com/docs/community](https://render.com/docs/community)
-- Netlify Forums: [answers.netlify.com](https://answers.netlify.com)
+- Vercel Forums: [vercel.com/docs/community](https://vercel.com/docs/community)
 - MongoDB Community: [mongodb.com/community](https://mongodb.com/community)
 
 ---
@@ -383,7 +386,7 @@ Already configured with `helmet` middleware
 - [ ] Cloudinary account set up
 - [ ] Environment variables configured
 - [ ] Backend deployed to Render
-- [ ] Frontend deployed to Netlify
+- [ ] Frontend deployed to Vercel
 - [ ] API URLs updated
 - [ ] Database indexes created
 - [ ] Authentication tested
@@ -396,4 +399,4 @@ Already configured with `helmet` middleware
 
 **🎉 Congratulations! Your ECE Complaint Portal is now live and fully functional!**
 
-**Access your application at:** `https://your-frontend-domain.vercel.app`
+**Access your application at:** `https://ece-complaint-portal2.vercel.app`

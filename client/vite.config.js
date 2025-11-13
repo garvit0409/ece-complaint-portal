@@ -16,4 +16,13 @@ export default defineConfig({
       'application/javascript': ['jsx'],
     },
   },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
+  },
 })
